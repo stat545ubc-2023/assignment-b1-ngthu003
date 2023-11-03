@@ -140,3 +140,27 @@ test_that('Numeric column mixed with strings', {
   expect_error(fn.Summarize.by.Group(df1, 'Grp', 'Val'))
 })
 ```
+
+4) Empty data frame
+
+```{r Empty_df}
+test_that('Empty data frame', {
+  df1 <- data.frame(
+    Grp = NA,
+    Val = NA
+  )
+  expect_error(fn.Summarize.by.Group(df1, 'Grp', 'Val'))
+})
+```
+
+5) Group/Metric arguments not found in the data frame
+
+```{r Empty_df}
+test_that('Group/Metric not found in df', {
+  df1 <- data.frame(
+    Grp = c('A', 'A', 'B'),
+    Val = c(1,2,10)
+  )
+  expect_error(fn.Summarize.by.Group(df1, 'Group', 'Val'))
+})
+```
