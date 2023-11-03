@@ -1,4 +1,6 @@
-This is a repository for Stat 545B Assignment B1
+## Assignment B1: Making a function
+
+***
 
 This contains the function \texttt{fn.Summarize.by.Group} which computes descriptive statistics (Count, Sum, Mean) of a numeric variable grouped by a categorical variable.
 

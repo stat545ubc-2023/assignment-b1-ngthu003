@@ -1,30 +1,19 @@
----
-title: "Assignment B1"
-author: "Thu Nguyen"
-date: "2023-11-02"
-# output: html_document
-output: github_document
-Roxygen: list(markdown = TRUE)
----
+Assignment B1
+================
+Thu Nguyen
+2023-11-02
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r Libraries, warning=F, message=F}
+``` r
 library(tidyverse)
 library(testthat)
 library(MASS)
 ```
 
-
-
 ## Exercise 1: Make a Function (25 points)
 
 ## Exercise 2: Document your Function (20 points)
 
-```{r Main_Function}
-
+``` r
 #' @title Summarize a metric variable grouped by a categorical variable
 #' @details Given a data frame, a categorical (group) variable and a numeric (metric) variable, 
 #'          compute the Count, Sum, and Mean of the metric variable grouped by the group variable
@@ -69,44 +58,91 @@ fn.Summarize.by.Group <- function(df, group, metric, ...) {
 }
 
 fn.Summarize.by.Group(Insurance, 'District', 'Claims')
+```
+
+    ##   get(group) Count Metric_Sum Metric_Mean
+    ## 1          1    16       1381       86.31
+    ## 2          2    16        891       55.69
+    ## 3          3    16        553       34.56
+    ## 4          4    16        326       20.38
+
+``` r
 fn.Summarize.by.Group(Insurance, 'District', 'Holders')
 ```
 
-
-
-
+    ##   get(group) Count Metric_Sum Metric_Mean
+    ## 1          1    16      10545      659.06
+    ## 2          2    16       6653      415.81
+    ## 3          3    16       4167      260.44
+    ## 4          4    16       1994      124.62
 
 ## Exercise 3: Include examples (15 points)
 
 Examples of correct use of the function.
 
-```{r Good_Examples}
+``` r
 fn.Summarize.by.Group(Insurance, 'District', 'Claims')
+```
+
+    ##   get(group) Count Metric_Sum Metric_Mean
+    ## 1          1    16       1381       86.31
+    ## 2          2    16        891       55.69
+    ## 3          3    16        553       34.56
+    ## 4          4    16        326       20.38
+
+``` r
 fn.Summarize.by.Group(Insurance, 'Age', 'Holders')
 ```
 
-```{r}
+    ##   get(group) Count Metric_Sum Metric_Mean
+    ## 1        <25    16       1138       71.12
+    ## 2      25-29    16       2336      146.00
+    ## 3      30-35    16       3007      187.94
+    ## 4        >35    16      16878     1054.88
+
+``` r
 fn.Summarize.by.Group(iris, 'Species', 'Petal.Width')
+```
+
+    ##   get(group) Count Metric_Sum Metric_Mean
+    ## 1     setosa    50       12.3        0.25
+    ## 2 versicolor    50       66.3        1.33
+    ## 3  virginica    50      101.3        2.03
+
+``` r
 fn.Summarize.by.Group(iris, 'Species', 'Petal.Length')
 ```
 
+    ##   get(group) Count Metric_Sum Metric_Mean
+    ## 1     setosa    50       73.1        1.46
+    ## 2 versicolor    50      213.0        4.26
+    ## 3  virginica    50      277.6        5.55
 
 Examples of incorrect use of the function.
 
-```{r Bad_Examples, error=TRUE}
+``` r
 fn.Summarize.by.Group(Insurance, 'Districts', 'Claims')
+```
+
+    ## Error in fn.Summarize.by.Group(Insurance, "Districts", "Claims"): Districts is not found in the data.
+
+``` r
 fn.Summarize.by.Group(Insurance, 'District', 'Age')
+```
+
+    ## Error in fn.Summarize.by.Group(Insurance, "District", "Age"): The metric (Age) must be of numeric type.
+
+``` r
 fn.Summarize.by.Group(Insurance, 'Holders', 'Claims')
 ```
 
-
-
+    ## Error in fn.Summarize.by.Group(Insurance, "Holders", "Claims"): The group (Holders) must not be of numeric type.
 
 ## Exercise 4: Test the Function (25 points)
 
-1) Numeric column has no NA's
+1)  Numeric column has no NA’s
 
-```{r No_NAs}
+``` r
 test_that('No NA', {
   df1 <- data.frame(
     Grp = c('A', 'A', 'B'),
@@ -118,9 +154,11 @@ test_that('No NA', {
 )
 ```
 
-2) Numeric column has NA's
+    ## Test passed 🎉
 
-```{r With_NAs}
+2)  Numeric column has NA’s
+
+``` r
 test_that('With NA', {
   df1 <- data.frame(
     Grp = c('A', 'A', 'B'),
@@ -131,9 +169,11 @@ test_that('With NA', {
 })
 ```
 
-3) Numeric column has some string values
+    ## Test passed 🎉
 
-```{r NA_Misspecified}
+3)  Numeric column has some string values
+
+``` r
 test_that('Numeric column mixed with strings', {
   df1 <- data.frame(
     Grp = c('A', 'A', 'B'),
@@ -143,9 +183,11 @@ test_that('Numeric column mixed with strings', {
 })
 ```
 
-4) Empty data frame
+    ## Test passed 🎊
 
-```{r Empty_df}
+4)  Empty data frame
+
+``` r
 test_that('Empty data frame', {
   df1 <- data.frame(
     Grp = NA,
@@ -155,9 +197,11 @@ test_that('Empty data frame', {
 })
 ```
 
-5) Group/Metric arguments not found in the data frame
+    ## Test passed 🎉
 
-```{r Variables_not_found_in_df}
+5)  Group/Metric arguments not found in the data frame
+
+``` r
 test_that('Group/Metric not found in df', {
   df1 <- data.frame(
     Grp = c('A', 'A', 'B'),
@@ -166,3 +210,5 @@ test_that('Group/Metric not found in df', {
   expect_error(fn.Summarize.by.Group(df1, 'Group', 'Val'))
 })
 ```
+
+    ## Test passed 😸
