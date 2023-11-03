@@ -1,0 +1,142 @@
+---
+title: "Assignment B1"
+author: "Thu Nguyen"
+date: "2023-11-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Libraries, warning=F, message=F}
+library(tidyverse)
+library(testthat)
+library(MASS)
+```
+
+
+
+## Exercise 1: Make a Function (25 points)
+
+## Exercise 2: Document your Function (20 points)
+
+```{r Main_Function}
+
+#' @title Summarize a metric variable grouped by a categorical variable
+#' @details Given a data frame, a categorical (group) variable and a numeric (metric) variable, 
+#'          compute the Count, Sum, and Mean of the metric variable grouped by the group variable
+#'
+#' @param df a data frame object
+#' @param group a string of non-numeric variable to be grouped by
+#' @param metric a string of numeric metric on which statistics to be computed
+#' @param ... not used.
+#' @return a data frame with 4 columns: Group - Count - Sum - Mean
+#'
+#' @examples
+#' fn.get.Mean.by.Group(Insurance, 'District', 'Claims')
+
+fn.Summarize.by.Group <- function(df, group, metric, ...) {
+  if(!(is.data.frame(df))) {
+    stop('df must be a data frame.')
+  }
+  if(!(group %in% colnames(df))) {
+    stop(paste0(group, ' is not found in the data.'))
+  }
+  if(!(metric %in% colnames(df))) {
+    stop(paste0(metric, ' is not found in the data.'))
+  }
+  if(is.numeric(unlist(df[group]))) {
+    stop(paste0('The group (', group, ') must not be of numeric type.'))
+  }
+  if(!is.numeric(unlist(df[metric]))) {
+    stop(paste0('The metric (', metric, ') must be of numeric type.'))
+  }
+  result <- df %>% 
+    group_by(get(group)) %>% 
+    summarize(
+      # Holders = sum(Holders),
+      Count = sum(!is.na(get(metric))),
+      Metric_Sum = sum(get(metric), na.rm = T),
+      Metric_Mean = round(mean(get(metric), na.rm = T),2)
+    ) %>% 
+    ungroup() %>% 
+    as.data.frame()
+  
+  return(result)
+}
+
+fn.Summarize.by.Group(Insurance, 'District', 'Claims')
+fn.Summarize.by.Group(Insurance, 'District', 'Holders')
+```
+
+
+
+
+
+## Exercise 3: Include examples (15 points)
+
+Examples of good use of the function.
+
+```{r Good_Examples}
+fn.Summarize.by.Group(Insurance, 'District', 'Claims')
+fn.Summarize.by.Group(Insurance, 'Age', 'Holders')
+```
+
+```{r}
+fn.Summarize.by.Group(iris, 'Species', 'Petal.Width')
+fn.Summarize.by.Group(iris, 'Species', 'Petal.Length')
+```
+
+
+Examples of incorrect use of the function.
+
+```{r Bad_Examples, error=TRUE}
+fn.Summarize.by.Group(Insurance, 'Districts', 'Claims')
+fn.Summarize.by.Group(Insurance, 'District', 'Age')
+fn.Summarize.by.Group(Insurance, 'Holders', 'Claims')
+```
+
+
+
+
+## Exercise 4: Test the Function (25 points)
+
+1) Numeric column has no NA's
+
+```{r No_NAs}
+test_that('No NA', {
+  df1 <- data.frame(
+    Grp = c('A', 'A', 'B'),
+    Val = c(1,2,10)
+  )
+  expect_equal(fn.Summarize.by.Group(df1, 'Grp', 'Val')[1,2], 2)
+  expect_equal(fn.Summarize.by.Group(df1, 'Grp', 'Val')[1,3], 3)
+}
+)
+```
+
+2) Numeric column has NA's
+
+```{r With_NAs}
+test_that('With NA', {
+  df1 <- data.frame(
+    Grp = c('A', 'A', 'B'),
+    Val = c(1,NA,10)
+  )
+  expect_equal(fn.Summarize.by.Group(df1, 'Grp', 'Val')[1,2], 1)
+  expect_equal(fn.Summarize.by.Group(df1, 'Grp', 'Val')[1,3], 1)
+})
+```
+
+3) Numeric column has some string values
+
+```{r NA_Misspecified}
+test_that('Numeric column mixed with strings', {
+  df1 <- data.frame(
+    Grp = c('A', 'A', 'B'),
+    Val = c(1,'String',10)
+  )
+  expect_error(fn.Summarize.by.Group(df1, 'Grp', 'Val'))
+})
+```
